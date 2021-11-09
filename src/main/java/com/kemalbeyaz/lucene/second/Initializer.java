@@ -28,19 +28,7 @@ public class Initializer {
 
         final var start = LocalDateTime.now();
         for (int i = 0; i < 100_000; i++) {
-            final var document = new Document();
-            var name = sampleDataProvider.getRandomName();
-            var surname = sampleDataProvider.getRandomSurName();
-
-            document.add(new StoredField("id", UUID.randomUUID().toString()));
-            document.add(new StringField("firstname", name, Field.Store.YES));
-            document.add(new StringField("surname", surname, Field.Store.YES));
-            document.add(new StringField("name", name + " " + surname, Field.Store.YES));
-            document.add(new StringField("email", name + "." + surname + "@example.com", Field.Store.YES));
-            document.add(new StoredField("birtDate", sampleDataProvider.getRandomDate().getTime()));
-            document.add(new TextField("text1", sampleDataProvider.getRandomText(), Field.Store.YES));
-            document.add(new TextField("text2", getLongText(sampleDataProvider), Field.Store.YES));
-
+            final var document = createSampleDocument(sampleDataProvider, i);
             writer.addDocument(document);
         }
 
@@ -49,6 +37,24 @@ public class Initializer {
 
         writer.close();
         index.close();
+    }
+
+    public static Document createSampleDocument(final SampleDataProvider sampleDataProvider, long point) {
+        final var document = new Document();
+        var name = sampleDataProvider.getRandomName();
+        var surname = sampleDataProvider.getRandomSurName();
+
+        document.add(new StoredField("id", UUID.randomUUID().toString()));
+        document.add(new StringField("firstname", name, Field.Store.YES));
+        document.add(new StringField("surname", surname, Field.Store.YES));
+        document.add(new StringField("name", name + " " + surname, Field.Store.YES));
+        document.add(new StringField("email", name + "." + surname + "@example.com", Field.Store.YES));
+        document.add(new StoredField("birtDate", sampleDataProvider.getRandomDate().getTime()));
+        document.add(new TextField("text1", sampleDataProvider.getRandomText(), Field.Store.YES));
+        document.add(new TextField("text2", getLongText(sampleDataProvider), Field.Store.YES));
+        document.add(new LongPoint("longPoint",point));
+
+        return document;
     }
 
     private static String getLongText(final SampleDataProvider sampleDataProvider) {
